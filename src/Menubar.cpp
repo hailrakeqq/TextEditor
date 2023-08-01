@@ -1,103 +1,77 @@
-#include <FL/Fl.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Menu_Bar.H>
 #include <iostream>
-#include <vector>
-#include "SearchWindow.cpp"
+#include "../include/Menubar.h"
+#include "../include/globals.h"
 
-class Menubar {
-public:
-    Menubar(int x, int y, int w, int h,  SearchWindow* searchWindow, const char* label = 0)
-    :searchWindow(searchWindow) {
-        initialMenu(w);
-    }
+Menubar::Menubar(int x, int y, int w, int h,  SearchWindow* searchWindow, Fl_Text_Editor* editor, const char* label)
+:searchWindow(searchWindow), editor(editor) {
+    initialMenu(w);
+}
 
-private:
-    Fl_Menu_Bar *menuBar;
-    SearchWindow* searchWindow;
+void Menubar::createAndOpenSearchWindow()
+{
+    searchWindow->createWindow();
+    searchWindow->show();
+}
 
-    void createAndOpenSearchWindow() {
-        searchWindow->createWindow();
-        searchWindow->show();
-    }
+void Menubar::initialMenu(int windowWidth)
+{
+    menuBar = new Fl_Menu_Bar(0, 0, windowWidth, 25);
+    menuBar->copy(menuItems.data());
+}
 
-    void initialMenu(int windowWidth)
-    {
-        menuBar = new Fl_Menu_Bar(0, 0, windowWidth, 25);
-        menuBar->copy(menuItems.data());
-    }
+void Menubar::new_cb(Fl_Widget* widget, void* data) {
+    std::cout << "New File menu item clicked." << std::endl;
+}
 
-    static void new_cb(Fl_Widget* widget, void* data) {
-        std::cout << "New File menu item clicked." << std::endl;
-    }
+void Menubar::open_cb(Fl_Widget* widget, void* data) {
+    std::cout << "Open File menu item clicked." << std::endl;
+}
 
-    static void open_cb(Fl_Widget* widget, void* data) {
-        std::cout << "Open File menu item clicked." << std::endl;
-    }
+void Menubar::save_cb(Fl_Widget* widget, void* data) {
+    std::cout << "Save File menu item clicked." << std::endl;
+}
 
-    static void save_cb(Fl_Widget* widget, void* data) {
-        std::cout << "Save File menu item clicked." << std::endl;
-    }
+void Menubar::saveas_cb(Fl_Widget* widget, void* data){
+    std::cout << "Save As File menu item clicked." << std::endl;
+}
 
-    static void saveas_cb(Fl_Widget* widget, void* data){
-        std::cout << "Save As File menu item clicked." << std::endl;
-    }
+void Menubar::quit_cb(Fl_Widget* widget, void* data){
+    delete Fl::first_window();
+}
 
-    static void quit_cb(Fl_Widget* widget, void* data){
-        delete Fl::first_window();
-    }
+void Menubar::undo_cb(Fl_Widget* widget, void* data){
+    std::cout << "Undo menu item clicked." << std::endl;
+}
 
-    static void undo_cb(Fl_Widget* widget, void* data){
-        std::cout << "Undo menu item clicked." << std::endl;
-    }
+void Menubar::cut_cb(Fl_Widget* widget, void* data){
+    Menubar* menubar = static_cast<Menubar*>(data);
+    Fl_Text_Editor::kf_cut(0, menubar->editor);
+    Fl::focus(menubar->editor);
+}
 
-    static void cut_cb(Fl_Widget* widget, void* data){
-        std::cout << "Cut menu item clicked." << std::endl;
-    }
+void Menubar::copy_cb(Fl_Widget* widget, void* data){
+    Menubar* menubar = static_cast<Menubar*>(data);
+    Fl_Text_Editor::kf_copy(0, menubar->editor);
+    menubar->editor->take_focus();
+}
 
-     static void copy_cb(Fl_Widget* widget, void* data){
-        std::cout << "Copy menu item clicked." << std::endl;
-    }
+void Menubar::paste_cb(Fl_Widget* widget, void* data){
+    Menubar* menubar = static_cast<Menubar*>(data);
+    Fl_Text_Editor::kf_paste(0, menubar->editor); 
+    menubar->editor->take_focus();
+}
 
-    static void paste_cb(Fl_Widget* widget, void* data){
-        std::cout << "Paste menu item clicked." << std::endl;
-    }
+void Menubar::delete_cb(Fl_Widget* widget, void* data){
+    textbuffer->remove_selection();
+}
 
-    static void delete_cb(Fl_Widget* widget, void* data){
-        std::cout << "Delete menu item clicked." << std::endl;
-    }
+void Menubar::find_cb(Fl_Widget* widget, void* data){
+    std::cout << "Find menu item clicked." << std::endl;
+    Menubar* menuBar = static_cast<Menubar*>(data);
+    menuBar->createAndOpenSearchWindow();
+}
 
-    static void find_cb(Fl_Widget* widget, void* data){
-        std::cout << "Find menu item clicked." << std::endl;
-        Menubar* menuBar = static_cast<Menubar*>(data);
-        menuBar->createAndOpenSearchWindow();
-    }
+void Menubar::replace_cb(Fl_Widget* widget, void* data){
+    std::cout << "Replace menu item clicked." << std::endl;
+}
 
-    static void replace_cb(Fl_Widget* widget, void* data){
-        std::cout << "Replace menu item clicked." << std::endl;
-    }
-
-    std::vector<Fl_Menu_Item> menuItems = {
-        { "&File",              0, 0, 0, FL_SUBMENU },
-          { "&New File",        0, (Fl_Callback *)new_cb },
-          { "&Open File...",    FL_CTRL + 'o', (Fl_Callback *)open_cb },
-          { "&Save File",       FL_CTRL + 's', (Fl_Callback *)save_cb },
-          { "Save File &As...", FL_CTRL + FL_SHIFT + 's', (Fl_Callback *)saveas_cb, 0, FL_MENU_DIVIDER },
-          { "E&xit", FL_CTRL + 'q', (Fl_Callback *)quit_cb, 0 },
-        { 0 },
-
-        { "&Edit", 0, 0, 0, FL_SUBMENU },
-          { "&Undo",       FL_CTRL + 'z', (Fl_Callback *)undo_cb, 0, FL_MENU_DIVIDER },
-          { "Cu&t",        FL_CTRL + 'x', (Fl_Callback *)cut_cb },
-          { "&Copy",       FL_CTRL + 'c', (Fl_Callback *)copy_cb },
-          { "&Paste",      FL_CTRL + 'v', (Fl_Callback *)paste_cb },
-          { "&Delete",     0, (Fl_Callback *)delete_cb },
-        { 0 },
-
-        { "&Search", 0, 0, 0, FL_SUBMENU },
-            { "&Find...",       FL_CTRL + 'f', (Fl_Callback *)find_cb, this},
-            { "&Replace...",    FL_CTRL + 'r', replace_cb },      
-            { 0 },
-        { 0 }
-    };
-};
