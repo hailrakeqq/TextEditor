@@ -5,7 +5,9 @@
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Text_Editor.H>
 #include <vector>
-#include "../src/SearchWindow.cpp"
+#include <iostream>
+#include "globals.h"
+#include "SearchWindow.h"
 
 class Menubar
 {

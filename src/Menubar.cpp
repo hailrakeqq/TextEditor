@@ -1,12 +1,9 @@
-#include <iostream>
 #include "../include/Menubar.h"
-#include "../include/globals.h"
 
-Menubar::Menubar(int x, int y, int w, int h,  SearchWindow* searchWindow, Fl_Text_Editor* editor, const char* label)
-:searchWindow(searchWindow), editor(editor) {
+Menubar::Menubar(int x, int y, int w, int h, SearchWindow* searchWindow, Fl_Text_Editor* editor, const char* label)
+    : searchWindow(searchWindow), editor(editor) {
     initialMenu(w);
 }
-
 void Menubar::createAndOpenSearchWindow()
 {
     searchWindow->createWindow();

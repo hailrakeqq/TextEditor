@@ -1,105 +1,91 @@
-#include <FL/Fl.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Input.H>
-#include <FL/Fl_Button.H>
-#include <FL/Fl_Return_Button.H>
+#include "../include/SearchWindow.h"
 
-class SearchWindow {
-public:
-    SearchWindow() {}
+SearchWindow::SearchWindow() {}
 
-    void createWindow() {
-        window = new Fl_Window(300, 105, "Search");
-        
-        searchInput = new Fl_Input(70, 10, 200, 25, "Find:");
-        searchInput->callback(staticSearchCallback, this);
+void SearchWindow::createWindow() {
+    window = new Fl_Window(300, 105, "Search");
 
-        replaceInput = new Fl_Input(70, 40, 200, 25, "Replace:");
-        replaceInput->callback(staticReplaceCallback, this);
+    searchInput = new Fl_Input(70, 10, 200, 25, "Find:");
+    searchInput->callback(staticSearchCallback, this);
 
-        replace_all = new Fl_Button(10, 70, 90, 25, "Replace All");
-        replace_all->callback(staticReplaceAllCallback, this);
+    replaceInput = new Fl_Input(70, 40, 200, 25, "Replace:");
+    replaceInput->callback(staticReplaceCallback, this);
 
-        replace_next = new Fl_Button(105, 70, 120, 25, "Replace Next");
-        replace_next->callback(staticReplaceNextCallback, this);
+    replace_all = new Fl_Button(10, 70, 90, 25, "Replace All");
+    replace_all->callback(staticReplaceAllCallback, this);
 
-        replace_cancel = new Fl_Button(230, 70, 60, 25, "Cancel");
-        replace_cancel->callback(staticCancelCallback, this);
+    replace_next = new Fl_Button(105, 70, 120, 25, "Replace Next");
+    replace_next->callback(staticReplaceNextCallback, this);
 
-        window->callback(staticWindowCallback, this);
-        window->set_modal();
+    replace_cancel = new Fl_Button(230, 70, 60, 25, "Cancel");
+    replace_cancel->callback(staticCancelCallback, this);
+
+    window->callback(staticWindowCallback, this);
+    window->set_modal();
+}
+
+void SearchWindow::show() {
+    window->show();
+    searchInput->take_focus();
+}
+
+void SearchWindow::hide() {
+    window->hide();
+}
+
+const char* SearchWindow::getSearchText() const {
+    return searchInput->value();
+}
+
+void SearchWindow::staticSearchCallback(Fl_Widget* widget, void* data) {
+    SearchWindow* searchWindow = static_cast<SearchWindow*>(data);
+    searchWindow->onSearchCallback();
+}
+
+void SearchWindow::staticReplaceCallback(Fl_Widget* widget, void* data) {
+    SearchWindow* searchWindow = static_cast<SearchWindow*>(data);
+    searchWindow->onReplaceCallback();
+}
+
+void SearchWindow::staticReplaceAllCallback(Fl_Widget* widget, void* data){
+    SearchWindow* searchWindow = static_cast<SearchWindow*>(data);
+    searchWindow->onReplaceAllCallback();
+}
+
+void SearchWindow::staticReplaceNextCallback(Fl_Widget* widget, void* data){
+    SearchWindow* searchWindow = static_cast<SearchWindow*>(data);
+    searchWindow->onReplaceNextCallback();
+}
+
+void SearchWindow::staticCancelCallback(Fl_Widget* widget, void* data){
+    SearchWindow* searchWindow = static_cast<SearchWindow*>(data);
+    searchWindow->onCancelCallback();
+}
+
+void SearchWindow::staticWindowCallback(Fl_Widget* widget, void* data) {
+    SearchWindow* searchWindow = static_cast<SearchWindow*>(data);
+    searchWindow->hide();
+}
+
+void SearchWindow::onSearchCallback() {
+    const char* searchText = getSearchText();
+    if (searchText != nullptr && *searchText != '\0') {
+        printf("Searching for: %s\n", searchText);
     }
+}
 
-    void show() {
-        window->show();
-        searchInput->take_focus();
-    }
+void SearchWindow::onReplaceCallback() {
+    // TODO: Implement replace functionality
+}
 
-    void hide() {
-        window->hide();
-    }
+void SearchWindow::onReplaceAllCallback(){
+    // TODO: Implement replace all functionality
+}
 
-    const char* getSearchText() const {
-        return searchInput->value();
-    }
-private:
-    Fl_Button *replace_all;
-    Fl_Button *replace_next;
-    Fl_Button *replace_cancel;
-    Fl_Window* window;
-    Fl_Input* searchInput;
-    Fl_Input *replaceInput;
+void SearchWindow::onReplaceNextCallback() {
+    // TODO: Implement replace next functionality
+}
 
-    static void staticSearchCallback(Fl_Widget* widget, void* data) {
-        SearchWindow* searchWindow = static_cast<SearchWindow*>(data);
-        searchWindow->onSearchCallback();
-    }
-
-    static void staticReplaceCallback(Fl_Widget* widget, void* data) {
-        SearchWindow* searchWindow = static_cast<SearchWindow*>(data);
-        searchWindow->onReplaceCallback();
-    }
-
-    static void staticReplaceAllCallback(Fl_Widget* widget, void* data){
-        SearchWindow* searchWindow = static_cast<SearchWindow*>(data);
-        searchWindow->onReplaceAllCallback();
-    }
-
-    static void staticReplaceNextCallback(Fl_Widget* widget, void* data){
-        SearchWindow* searchWindow = static_cast<SearchWindow*>(data);
-        searchWindow->onReplaceNextCallback();
-    }
-
-    static void staticCancelCallback(Fl_Widget* widget, void* data){
-        SearchWindow* searchWindow = static_cast<SearchWindow*>(data);
-        searchWindow->onCancelCallback();
-    }
-
-    static void staticWindowCallback(Fl_Widget* widget, void* data) {
-        SearchWindow* searchWindow = static_cast<SearchWindow*>(data);
-        searchWindow->hide();
-    }
-
-    void onSearchCallback() {
-        const char* searchText = getSearchText();
-        if (searchText != nullptr && *searchText != '\0') {
-            printf("Searching for: %s\n", searchText);
-        }
-    }
-
-    void onReplaceCallback() {
-        
-    }
-
-    void onReplaceAllCallback(){
-
-    }
-
-    void onReplaceNextCallback() {
-
-    }
-
-    void onCancelCallback(){
-        hide();
-    }
-};
+void SearchWindow::onCancelCallback(){
+    hide();
+}
